@@ -2,10 +2,12 @@ package isu.volunteer.api.user;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -38,13 +40,16 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String username;
     private String password;
 
     private String firstName;
     private String lastName;
 
+    @Column(unique = true)
     private String email;
+    @Column(unique = true)
     private String phone;
 
     @CreatedDate
@@ -55,8 +60,8 @@ public class User {
     @Column(name = "modified_at")
     private Date modifiedAt;
 
-    @ManyToMany
-    private Collection<Role> roles;
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<Role> roles;
 
     @ManyToMany
     private Collection<Chat> chats;
