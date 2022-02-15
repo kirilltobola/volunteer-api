@@ -2,16 +2,20 @@ package isu.volunteer.api.order;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -58,5 +62,12 @@ public class Order {
     private Date modifiedAt;
 
     @ManyToMany(mappedBy = "orders")
-    private Collection<User> users;
+    private List<User> users;
+
+    @ManyToOne
+	@JoinColumn(
+        name = "owner_id",
+        foreignKey = @ForeignKey(name = "OWNER_ID_FK")
+	)
+    private User owner;
 }
