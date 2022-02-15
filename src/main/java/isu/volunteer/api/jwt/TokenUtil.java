@@ -20,11 +20,16 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import isu.volunteer.api.role.Role;
+import isu.volunteer.api.user.User;
+import isu.volunteer.api.user.UserService;
 
 @Component
 public class TokenUtil {
     @Autowired
     private UserDetailsService userDetailsService;
+
+    @Autowired
+    private UserService userService;
     
     @Value("${jwt.salt}")
     private String salt;
@@ -78,6 +83,12 @@ public class TokenUtil {
         );
     }
 
+    public User getUser(String token) {
+        String username = getUsername(token.substring(7, token.length()));
+        User user = this.userService.findByUsername(username);
+        return user;
+    }
+
     protected String getUsername(String token) {
         return Jwts.parser().setSigningKey(getEncodedSalt(this.salt)).parseClaimsJws(token).getBody().getSubject();
     }
@@ -85,4 +96,8 @@ public class TokenUtil {
     protected String getEncodedSalt(String salt) {
         return Base64.getEncoder().encodeToString(salt.getBytes());
     }
+
+    public Date getExpirationByToken(String token) {
+        return Jwts.parser().setSigningKey(getEncodedSalt(this.salt)).parseClaimsJws(token).getBody().getExpiration();
+    } 
 }
