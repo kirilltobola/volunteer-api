@@ -36,7 +36,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .authorizeRequests()
             .antMatchers("/api/v1/auth/**").permitAll()
-            .antMatchers(HttpMethod.POST, "/api/v1/orders").hasRole("MEDIC")
+            .antMatchers(HttpMethod.GET, "/api/v1/orders/**").hasRole("USER")
+            .antMatchers(HttpMethod.PATCH, "/api/v1/orders/**/accept").hasRole("USER")
+            .antMatchers("/api/v1/orders/**").hasRole("MEDIC")
             .anyRequest().authenticated()
             .and()
             .apply(new Configurer(this.tokenProvider));
