@@ -21,7 +21,7 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public User addUser(User user) {
+    public User add(User user) {
         Role roleUser = roleRepository.findByName("ROLE_USER");
         List<Role> userRoles = new ArrayList<>();
         userRoles.add(roleUser);
@@ -30,6 +30,10 @@ public class UserService {
         user.setRoles(userRoles);
 
         return userRepository.save(user);
+    }
+
+    public User save(User user) {
+        return this.userRepository.save(user);
     }
 
     public List<User> getAll() {

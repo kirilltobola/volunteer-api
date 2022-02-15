@@ -39,12 +39,13 @@ public class AuthController {
         User user = new User();
         user.setUsername(userDto.getUsername());
         user.setPassword(userDto.getPassword());
-        this.userService.addUser(user);
+        this.userService.add(user);
 
         String token = this.tokenProvider.createToken(userDto.getUsername(), user.getRoles());
         Map<String, Object> response = new HashMap<>();
         response.put("username", userDto.getUsername());
         response.put("token", token);
+        response.put("expires in", this.tokenProvider.getExpirationByToken(token));
 
         return ResponseEntity.ok(response);
     }
@@ -63,6 +64,7 @@ public class AuthController {
 
         String token = this.tokenProvider.createToken(username, user.getRoles());
         response.put("token", token);
+        response.put("expires in", this.tokenProvider.getExpirationByToken(token));
 
         return ResponseEntity.ok(response);
     }
