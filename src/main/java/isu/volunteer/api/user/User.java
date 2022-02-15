@@ -66,7 +66,7 @@ public class User {
     @ManyToMany
     private Collection<Chat> chats;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     private Collection<Order> orders;
 
     @OneToMany(
