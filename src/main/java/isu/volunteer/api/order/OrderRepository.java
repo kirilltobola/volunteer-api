@@ -1,7 +1,12 @@
 package isu.volunteer.api.order;
 
-import org.springframework.data.repository.PagingAndSortingRepository;
+import java.util.List;
 
-public interface OrderRepository extends PagingAndSortingRepository<Order, Long> {
-    
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+public interface OrderRepository extends JpaRepository<Order, Long> {
+    @Query(value = "SELECT o FROM Order o WHERE o.status = :status")
+    List<Order> findAllActiveOrders(@Param("status") Status status);
 }
