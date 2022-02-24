@@ -1,7 +1,7 @@
 package isu.volunteer.api.role;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,19 +16,11 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import isu.volunteer.api.privilege.Privilege;
 import isu.volunteer.api.user.User;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 
 @Entity
 @Table(name = "roles")
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,11 +30,11 @@ public class Role {
 
     @CreatedDate
     @Column(name = "created_at")
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
     @Column(name = "modified_at")
-    private Date modifiedAt;
+    private LocalDateTime modifiedAt;
 
     @ManyToMany()
     private Collection<Privilege> privileges;

@@ -1,8 +1,6 @@
 package isu.volunteer.api.order;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -14,7 +12,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -22,32 +19,24 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import isu.volunteer.api.user.User;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 
 @Entity
 @Table(name = "orders")
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // @Embedded
-    // private Address address;
+    @Embedded
+    private Address address;
 
     private String headline;
 
     private String comment;
 
-    private Date date;
+    private LocalDateTime date;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
@@ -55,14 +44,19 @@ public class Order {
 
     @CreatedDate
     @Column(name = "created_at")
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
     @Column(name = "modified_at")
-    private Date modifiedAt;
+    private LocalDateTime modifiedAt;
 
-    @ManyToMany(mappedBy = "orders")
-    private List<User> users;
+    @ManyToOne
+    @JoinColumn(
+        name = "performer_id",
+        foreignKey = @ForeignKey(name = "PERFORMER_ID_FK")
+    )
+    private User performer;
+
 
     @ManyToOne
 	@JoinColumn(

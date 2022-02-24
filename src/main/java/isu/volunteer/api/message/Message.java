@@ -1,12 +1,14 @@
 package isu.volunteer.api.message;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -15,19 +17,11 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import isu.volunteer.api.chat.Chat;
 import isu.volunteer.api.user.User;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 
+@Data
 @Entity
 @Table(name = "messages")
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
-@AllArgsConstructor
 public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,15 +31,23 @@ public class Message {
 
     @CreatedDate
     @Column(name = "created_at")
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
     @Column(name = "modified_at")
-    private Date modifiedAt;
+    private LocalDateTime modifiedAt;
 
     @ManyToOne
-    private User user;
+    @JoinColumn(
+        name = "sender_id",
+        foreignKey = @ForeignKey(name = "SENDER_ID_FK")
+    )
+    private User sender;
 
     @ManyToOne
+    @JoinColumn(
+        name = "chat_id",
+        foreignKey = @ForeignKey(name = "CHAT_ID_FK")
+    )
     private Chat chat;
 }

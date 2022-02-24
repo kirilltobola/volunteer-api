@@ -3,17 +3,14 @@ package isu.volunteer.api.order;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
-
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 @Embeddable
-@Getter
-@Setter
+@Data
 public class Address {
-    // @Column(name = "from")
+    @Column(name = "from_address")
     private String from;
 
-    // @Column(name = "to")
+    @Column(name = "to_address")
     private String to;
 }
