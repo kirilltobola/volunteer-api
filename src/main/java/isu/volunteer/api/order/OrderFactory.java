@@ -1,7 +1,10 @@
 package isu.volunteer.api.order;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public final class OrderFactory {
-    public static Order create() {
+    public Order create() {
         return new Order();
     }
 }

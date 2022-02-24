@@ -1,7 +1,10 @@
 package isu.volunteer.api.chat;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public final class ChatFactory {
-    public static Chat create() {
+    public Chat create() {
         return new Chat();
     }
 }
