@@ -1,5 +1,6 @@
-package isu.volunteer.api.user;
+package isu.volunteer.api.user.dto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -8,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import isu.volunteer.api.role.Role;
 import isu.volunteer.api.role.RoleDto;
+import isu.volunteer.api.user.User;
 import lombok.Data;
 
 @Data
@@ -27,9 +29,7 @@ public class UserDto {
 
     private String phone;
 
-    // private Date createdAt;
-
-    // private Date modifiedAt;
+    private LocalDateTime createdAt;
 
     private List<RoleDto> roles;
 
@@ -40,6 +40,7 @@ public class UserDto {
         this.lastName = user.getLastName();
         this.email = user.getEmail();
         this.phone = user.getPhone();
+        this.createdAt = user.getCreatedAt();
         this.roles = convertRolesToRoleDtos(user.getRoles());
     }
 
