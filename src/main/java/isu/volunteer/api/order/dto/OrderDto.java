@@ -1,13 +1,16 @@
-package isu.volunteer.api.order;
+package isu.volunteer.api.order.dto;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import isu.volunteer.api.order.Address;
+import isu.volunteer.api.order.Order;
+import isu.volunteer.api.order.Status;
 import isu.volunteer.api.user.User;
-import isu.volunteer.api.user.UserDto;
+import isu.volunteer.api.user.dto.UserDto;
 import lombok.Data;
 
 @Data
@@ -15,22 +18,22 @@ import lombok.Data;
 public class OrderDto {
     private Long id;
 
-    // private Address address;
+    private Address address;
 
     private String headline;
     private String comment;
 
-    private Date date;
+    private LocalDateTime date;
     private Status status;
 
-    private Date createdAt;
-    private Date modifiedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime modifiedAt;
 
-    private List<UserDto> users;
+    private UserDto performer;
     private UserDto owner;
 
     public OrderDto(Order order) {
-        // TODO: address;
+        this.address = order.getAddress();
         this.id = order.getId();
         this.headline = order.getHeadline();
         this.comment =order.getComment();
@@ -38,15 +41,15 @@ public class OrderDto {
         this.status = order.getStatus();
         this.createdAt = order.getCreatedAt();
         this.modifiedAt = order.getModifiedAt();
-        this.users = convertUsersToUserDtos(order.getUsers());
+        this.performer = convertUserToUserDto(order.getPerformer());
         this.owner = convertUserToUserDto(order.getOwner());
     }
 
-    protected List<UserDto> convertUsersToUserDtos(List<User> users) {
-        return users.stream().map(user -> new UserDto(user)).collect(Collectors.toList());
-    }
-
     protected UserDto convertUserToUserDto(User user) {
+        if(user == null) {
+            // TODO: dont return null;
+            return null;
+        }
         return new UserDto(user);
     }
 
