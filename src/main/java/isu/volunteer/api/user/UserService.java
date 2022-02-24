@@ -1,5 +1,6 @@
 package isu.volunteer.api.user;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public User add(User user) {
+    public User register(User user) {
         Role roleUser = roleRepository.findByName("ROLE_USER");
         List<Role> userRoles = new ArrayList<>();
         userRoles.add(roleUser);
@@ -29,11 +30,21 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoles(userRoles);
 
+        LocalDateTime now = LocalDateTime.now();
+        user.setCreatedAt(now);
+        user.setModifiedAt(now);
+
         return userRepository.save(user);
     }
 
     public User save(User user) {
+        user.setModifiedAt(LocalDateTime.now());
         return this.userRepository.save(user);
+    }
+
+    public User changePassword(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return user;
     }
 
     public List<User> getAll() {
