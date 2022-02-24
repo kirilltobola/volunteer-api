@@ -57,13 +57,12 @@ public class TokenUtil {
                 ).compact();
     }
 
-    public String resolveToken(HttpServletRequest request) {
+    public String resolveToken(HttpServletRequest request) throws InvalidTokenException {
         String token = request.getHeader("Authorization");
         if (token != null && token.startsWith("Bearer ")) {
             return token.substring(7, token.length());
         }
-        // throw exception
-        return null;
+        throw new InvalidTokenException("must starts with 'Bearer '");
     }
 
     public boolean validateToken(String token) {

@@ -22,14 +22,25 @@ public class Filter extends GenericFilterBean {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        String token = tokenProvider.resolveToken((HttpServletRequest) request);
-        if(token != null && tokenProvider.validateToken(token)) {
-            Authentication authentication = tokenProvider.getAuthentication(token);
-            if(authentication != null) {
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+    public void doFilter(
+        ServletRequest request,
+        ServletResponse response,
+        FilterChain chain
+    ) throws IOException, ServletException {
+        
+        try {
+            String token = tokenProvider.resolveToken((HttpServletRequest) request);
+            if(token != null && tokenProvider.validateToken(token)) {
+                Authentication authentication = tokenProvider.getAuthentication(token);
+                if(authentication != null) {
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
             }
+        } catch (InvalidTokenException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
+        
         chain.doFilter(request, response);
     }
 }
