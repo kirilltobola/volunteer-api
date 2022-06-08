@@ -36,6 +36,10 @@ public class ChatService {
         return this.chatRepository.save(chat);
     }
 
+    public Chat getChat(Chat chat) {
+        return this.chatRepository.getById(chat.getId());
+    }
+
     public Chat save(Chat chat) {
         chat.setModifiedAt(LocalDateTime.now());
         return this.chatRepository.save(chat);
@@ -47,6 +51,14 @@ public class ChatService {
 
     public List<Chat> findVisibleChatsByUser(User user) {
         return this.chatRepository.findVisibleChatsByUser(user);
+    }
+
+    public Long countMessages(Chat chat, User issuer) {
+        return this.chatRepository.countMessages(chat, issuer);
+    }
+
+    public Chat findChatByUsers(User user1, User user2) {
+        return this.chatRepository.findChatByUsers(user1, user2);
     }
 
     public Chat deleteForUser(User user, Chat chat) {

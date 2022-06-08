@@ -63,14 +63,19 @@ public class ChatController {
         
         User issuer = this.tokenUtil.getUser(token);
         User user = this.userService.findById(chatDto.getUserId());
+        Chat foundedChat = this.chatService.findChatByUsers(issuer, user);
 
-        Chat chat = this.chatService.createChat(issuer, user);
-        chat.setCreatedAt(LocalDateTime.now());
-        chat.setModifiedAt(LocalDateTime.now());
-        this.chatService.save(chat);
-
-        response.put("status", "chat succesfully created");
-        return ResponseEntity.ok(response);
+        if (issuer.getId() != chatDto.getUserId() && foundedChat == null) {
+            Chat chat = this.chatService.createChat(issuer, user);
+            chat.setCreatedAt(LocalDateTime.now());
+            chat.setModifiedAt(LocalDateTime.now());
+            return ResponseEntity.ok(new ChatDto(this.chatService.save(chat), issuer));
+        } else {
+            foundedChat.setVisibleForInitiator(true);
+            foundedChat.setVisibleForMember(true);
+            this.chatService.save(foundedChat);
+            return ResponseEntity.ok(new ChatDto(foundedChat, issuer));
+        }
     }
 
     @PostMapping(path = "/{id}")
@@ -99,8 +104,8 @@ public class ChatController {
         
     }
 
-    @GetMapping(path = "/{id}")
-    public ResponseEntity<Object> getChat(
+    @GetMapping(path = "/{id}/messages")
+    public ResponseEntity<Object> getChatMessages(
         @RequestHeader("Authorization") String token,
         @PathVariable("id") Chat chat
     ) {
@@ -112,10 +117,35 @@ public class ChatController {
             List<MessageDto> messageDtos = MessageDto.convertToDto(messages);
 
             response.put("messages", messageDtos);
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(messageDtos); // TODO: delete response
         }
         throw new AccessDeniedException("You are not in the chat.");
         
+    }
+
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<Object> getChat(
+        @RequestHeader("Authorization") String token,
+        @PathVariable("id") Chat chat
+    ) { 
+        User issuer = this.tokenUtil.getUser(token);
+        if(chat.getInitiator().equals(issuer) || chat.getMember().equals(issuer)) {
+            return ResponseEntity.ok(new ChatDto(chat, issuer));
+        }
+        throw new AccessDeniedException("You are not in the chat.");
+    }
+
+    @GetMapping(path = "/{id}/count-messages")
+    public ResponseEntity<Object> countMessages(
+        @RequestHeader("Authorization") String token,
+        @PathVariable("id") Chat chat
+    ) {
+        Map<Object, Object> response = new HashMap<>();
+        User issuer = this.tokenUtil.getUser(token);
+
+        Long messagesCount = this.chatService.countMessages(chat, issuer);
+        response.put("messages", messagesCount); // TODO make dto or smthg
+        return ResponseEntity.ok(messagesCount);
     }
 
     @GetMapping()
@@ -127,11 +157,14 @@ public class ChatController {
         List<ChatDto> chatDtos = ChatDto.convertToChatDto(chats, issuer);
 
         response.put("chats", chatDtos);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(chatDtos);
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<Object> deleteChat(@RequestHeader("Authorization") String token, @PathVariable("id") Chat chat) {
+    public ResponseEntity<Object> deleteChat(
+        @RequestHeader("Authorization") String token, 
+        @PathVariable("id") Chat chat
+        ) {
         Map<Object, Object> response = new HashMap<>();
 
         User issuer = this.tokenUtil.getUser(token);
