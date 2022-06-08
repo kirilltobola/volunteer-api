@@ -22,10 +22,13 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public User register(User user) {
+    public User register(User user, Boolean isMedic) {
         Role roleUser = roleRepository.findByName("ROLE_USER");
         List<Role> userRoles = new ArrayList<>();
         userRoles.add(roleUser);
+        if (isMedic != null && isMedic == true) {
+            userRoles.add(roleRepository.findByName("ROLE_MEDIC"));
+        }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoles(userRoles);
@@ -53,6 +56,10 @@ public class UserService {
 
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    public User findByPhone(String phone) {
+        return userRepository.findByPhone(phone);
     }
 
     public User findById(Long id) {
