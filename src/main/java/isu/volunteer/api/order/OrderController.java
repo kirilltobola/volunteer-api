@@ -49,21 +49,17 @@ public class OrderController {
 
     @GetMapping()
     public ResponseEntity<Object> getActiveOrders() {
-        Map<Object, Object> response = new HashMap<>();
-        response.put(
-            "orders",
+        return ResponseEntity.ok(
             OrderDto.convertOrdersToOrderDtos(this.orderService.findActive())
         );
-        return ResponseEntity.ok(response);
     }
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<Object> getOrder(@PathVariable("id") Order order) {
         OrderDto orderDto = new OrderDto(order);
-        
         Map<Object, Object> response = new HashMap<>();
         response.put("order", orderDto);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(orderDto);
     }
 
     @PostMapping
@@ -80,6 +76,7 @@ public class OrderController {
         LocalDateTime now = LocalDateTime.now();
         order.setCreatedAt(now);
         order.setModifiedAt(now);
+        order.setStatus(Status.ACTIVE);
         this.orderService.save(order);
 
         Map<Object, Object> response = new HashMap<>();
@@ -107,23 +104,23 @@ public class OrderController {
         throw new AccessDeniedException("You are not owner of the order.");
     }
 
-    @PatchMapping(path = "/{id}")
-    public ResponseEntity<Object> editStatus(
+    @PatchMapping(path = "/{id}/done")
+    public ResponseEntity<Object> done(
         @PathVariable("id") Order order,
-        @RequestBody @Valid EditStatusDto orderDto,
         @RequestHeader("Authorization") String token
     ) {
         Map<Object, Object> response = new HashMap<>();
         User user = this.tokenUtil.getUser(token);
 
-        if(order.getOwner().equals(user)) {
-            order.setStatus(Status.valueOf(orderDto.getStatus()));
+        if (order.getOwner().equals(user)) {
+            order.setStatus(Status.valueOf("DONE"));
             order.setModifiedAt(LocalDateTime.now());
             this.orderService.save(order);
-            response.put("status", "status successfully edited");
+
+            response.put("status", "status changed");
             return ResponseEntity.ok(response);
         }
-        throw new AccessDeniedException("You are not owner of the order.");
+        throw new AccessDeniedException("You cannot respond to the order.");
     }
 
     @PatchMapping(path = "/{id}/accept")
@@ -136,6 +133,7 @@ public class OrderController {
 
         if(order.getPerformer() == null && !order.getOwner().equals(user)) {
             order.setPerformer(user);
+            order.setStatus(Status.valueOf("IN_PROGRESS"));
             order.setModifiedAt(LocalDateTime.now());
             this.orderService.save(order);
 
@@ -143,6 +141,57 @@ public class OrderController {
             return ResponseEntity.ok(response);
         }
         throw new AccessDeniedException("You cannot respond to the order.");
+    }
+
+    @PatchMapping(path = "/{id}/decline")
+    public ResponseEntity<Object> decline(
+        @PathVariable("id") Order order,
+        @RequestHeader("Authorization") String token
+    ) {
+        Map<Object, Object> response = new HashMap<>();
+        User user = this.tokenUtil.getUser(token);
+
+        if(order.getPerformer().equals(user)) {
+            order.setPerformer(null);
+            order.setStatus(Status.valueOf("ACTIVE"));
+            order.setModifiedAt(LocalDateTime.now());
+            this.orderService.save(order);
+
+            response.put("status", "succesfully declined");
+            return ResponseEntity.ok(response);
+        }
+        throw new AccessDeniedException("You cannot decline the order.");
+    }
+
+    @PatchMapping(path = "/{id}/untie")
+    public ResponseEntity<Object> untiePerformer(
+        @PathVariable("id") Order order,
+        @RequestHeader("Authorization") String token
+    ) {
+        Map<Object, Object> response = new HashMap<>();
+        User user = this.tokenUtil.getUser(token);
+
+        if (order.getOwner().equals(user)) {
+            // TODO: look up, same insructions!
+            order.setPerformer(null);
+            order.setStatus(Status.valueOf("ACTIVE"));
+            order.setModifiedAt(LocalDateTime.now());
+            this.orderService.save(order);
+
+            response.put("status", "succesfully untied");
+            return ResponseEntity.ok(response);
+        }
+        throw new AccessDeniedException("You cannot decline the order.");
+    }
+
+    @GetMapping(path = "/{id}/has-performer")
+    public ResponseEntity<Object> hasPerformer(
+        @PathVariable("id") Order order,
+        @RequestHeader("Authorization") String token
+    ) {
+        // TODO: check token
+        Boolean hasPerformer = this.orderService.hasPerformer(order);
+        return ResponseEntity.ok(hasPerformer);
     }
 
     @DeleteMapping(path = "/{id}")
