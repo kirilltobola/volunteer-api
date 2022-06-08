@@ -8,6 +8,7 @@
 		<version>2.6.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
+	<packaging>jar</packaging>
 	<groupId>isu.volunteer</groupId>
 	<artifactId>api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -57,6 +58,23 @@
             <artifactId>jjwt</artifactId>
             <version>0.8.0</version>
         </dependency>
+
+		<!-- JAXB -->
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-core</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+			<version>2.3.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
