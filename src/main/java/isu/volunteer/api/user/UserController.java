@@ -49,7 +49,7 @@ public class UserController {
         Map<Object, Object> response = new HashMap<>();
         UserDto userDto = new UserDto(user);
         response.put("user", userDto);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(userDto);
     }
 
     @GetMapping(path = "/{id}/orders")
@@ -60,7 +60,7 @@ public class UserController {
         );
         response.put("username", user.getUsername());
         response.put("orders", orders);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(orders);
     }
 
     @PatchMapping(path = "/{id}")

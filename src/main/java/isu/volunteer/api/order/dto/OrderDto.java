@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import isu.volunteer.api.order.Address;
@@ -23,6 +24,7 @@ public class OrderDto {
     private String headline;
     private String comment;
 
+    @JsonFormat(pattern = "dd.MM.yyyy HH:mm")
     private LocalDateTime date;
     private Status status;
 

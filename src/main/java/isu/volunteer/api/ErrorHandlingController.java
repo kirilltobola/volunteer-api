@@ -20,8 +20,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import isu.volunteer.api.user.PhoneInUseException;
+import isu.volunteer.api.user.UserNameInUseException;
+
 @ControllerAdvice
 public class ErrorHandlingController extends ResponseEntityExceptionHandler{
+
+    private ErrorResponse makeResponse(Exception ex, String msg) {
+        List<String> errorDetails = new ArrayList<>();
+        errorDetails.add(ex.getMessage());
+        ErrorResponse response = new ErrorResponse(msg, errorDetails);
+        return response;
+    }
     
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
@@ -29,12 +39,7 @@ public class ErrorHandlingController extends ResponseEntityExceptionHandler{
         HttpHeaders headers,
         HttpStatus status, 
         WebRequest request) {
-            
-            List<String> details = new ArrayList<>();
-            details.add(ex.getMessage());
-            String message = "Validation failed.";
-            ErrorResponse response = new ErrorResponse(message, details);
-            
+            ErrorResponse response = makeResponse(ex, "Validation failed.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
         
@@ -44,16 +49,10 @@ public class ErrorHandlingController extends ResponseEntityExceptionHandler{
         HttpHeaders headers,
         HttpStatus status, 
         WebRequest request) {
-            
-            List<String> details = new ArrayList<>();
-            details.add(ex.getMessage());
-            String message = "Path variable is not valid.";
-            ErrorResponse response = new ErrorResponse(message, details);
-            
+            ErrorResponse response = makeResponse(ex, "Path variable is not valid.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     
-    // TODO: get default message;
     @ResponseBody
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Object> handleConstraintValidationException(ConstraintViolationException ex) {
@@ -70,33 +69,35 @@ public class ErrorHandlingController extends ResponseEntityExceptionHandler{
     @ResponseBody
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<Object> handleUsernameNotFountException(AuthenticationException ex) {
-        List<String> details = new ArrayList<>();
-        details.add(ex.getMessage());
-        String message = "Authentication exception.";
-        ErrorResponse response = new ErrorResponse(message, details);
-
+        ErrorResponse response = makeResponse(ex, "Authentication exception.");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     @ResponseBody
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException ex) {
-        List<String> details = new ArrayList<>();
-        details.add(ex.getMessage());
-        String message = "Access denied exception.";
-        ErrorResponse response = new ErrorResponse(message, details);
-
+        ErrorResponse response = makeResponse(ex, "Access denied exception.");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
+    @ResponseBody
+    @ExceptionHandler(UserNameInUseException.class)
+    public ResponseEntity<Object> handleUsernameInUseException(UserNameInUseException ex) {
+        ErrorResponse response = makeResponse(ex, "Given username is in use.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ResponseBody
+    @ExceptionHandler(PhoneInUseException.class)
+    public ResponseEntity<Object> handlePhoneInUseException(PhoneInUseException ex) {
+        ErrorResponse response = makeResponse(ex, "Given phone is in use.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     @ResponseBody
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<Object> handeUsernameNotFoundException(UsernameNotFoundException ex) {
-        List<String> details = new ArrayList<>();
-        details.add(ex.getMessage());
-        String message = "Username not found.";
-        ErrorResponse response = new ErrorResponse(message, details);
-
+        ErrorResponse response = makeResponse(ex, "Username not found.");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 }

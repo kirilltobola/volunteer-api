@@ -13,7 +13,7 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Validated
 public class AddChatDto {
-    @JsonProperty(value = "user id")
+    @JsonProperty(value = "userId")
     @Positive
     private Long userId;
 }

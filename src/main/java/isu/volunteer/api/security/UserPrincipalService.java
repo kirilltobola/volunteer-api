@@ -29,7 +29,8 @@ public class UserPrincipalService implements UserDetailsService {
                 user.getLastName(), 
                 user.getEmail(), 
                 user.getEmail(), 
-                user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList())
+                user.getRoles().stream().map(
+                    role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList())
             );
             return userPrincipal;
         }
