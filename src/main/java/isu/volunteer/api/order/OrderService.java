@@ -30,6 +30,10 @@ public class OrderService {
         return this.orderRepository.save(order);
     }
 
+    public Boolean hasPerformer(Order order) {
+        return this.orderRepository.hasPerformer(order);
+    }
+
     public Order findById(Long id) {
         return this.orderRepository.findById(id).orElse(null);
     }

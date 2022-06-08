@@ -14,4 +14,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query(value = "SELECT o FROM Order o WHERE o.owner = :user OR o.performer = :user")
     List<Order> findOrdersByUser(@Param("user") User user);
+
+    @Query(value = "SELECT (o.performer != null) FROM Order o WHERE o = :order")
+    Boolean hasPerformer(@Param("order") Order order);
 }
